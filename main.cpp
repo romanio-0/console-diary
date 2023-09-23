@@ -88,6 +88,13 @@ void sortAndPrint(list<Event> listEvent, list<Birthday> listBirthday, char mode)
     }
 }
 
+void clearData(list<Event> &listEvent, list<Birthday> &listBirthday){
+    listEvent.clear();
+    listBirthday.clear();
+
+    remove(NAME_FILE_DATA);
+}
+
 void checkEvBr(list<Event> &listEvent, list<Birthday> &listBirthday) {
     time_t timeT;
     tm *pTm;
@@ -142,6 +149,9 @@ void checkEvBr(list<Event> &listEvent, list<Birthday> &listBirthday) {
                 itemBirthday->age++;
             }
         }
+
+        //записываем изменения
+        writeFileData(listEvent, listBirthday);
     }
 }
 
@@ -160,7 +170,7 @@ int main(void) {
 
     // работает пока пользователь не введете "0"
     while (status) {
-        cout << "Commands:\n[1] - Add | [2] - Request | [3] - Save | [0] - Exit" << endl;
+        cout << "Commands:\n[1] - Add | [2] - Request | [3] - Save | [4] - All Delete | [0] - Exit" << endl;
         consRead.clear();
         getline(cin, consRead);
 
@@ -244,6 +254,16 @@ int main(void) {
                 }
 
                 status = false;
+                break;
+            case '4':
+                cout << "You are sure?\n[1] - Yes | [2] - No" << endl;
+                consRead.clear();
+                getline(cin, consRead);
+
+                if (consRead[0] == '1'){
+                    clearData(listEvent, listBirthday);
+                }
+
                 break;
             default:
                 cout << "Enter valid value" << endl;
