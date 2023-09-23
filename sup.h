@@ -5,22 +5,24 @@
 #include <cstdint>
 #include <list>
 #include <ctime>
+#include <chrono>
 #include <limits>
-#include <algorithm>
+#include <thread>
 
-struct FIO{
+
+struct FIO {
     std::string surname;
     std::string name;
     std::string patronymic;
 };
 
-struct Date{
+struct Date {
     uint16_t day;
     uint16_t month;
     uint16_t year;
 };
 
-struct DateTime{
+struct DateTime {
     uint16_t day;
     uint16_t month;
     uint16_t year;
@@ -35,6 +37,7 @@ struct Event {
 };
 
 struct Birthday {
+    int age;
     Date date; // Дата окончания: ДД.ММ.ГГГГ в числовом формате в структуре
     FIO full_name; // Структура с тремя строками: ФИО
 };
@@ -57,14 +60,19 @@ Birthday addBirthday();
 bool checkRepeatBirthday(std::list<Birthday> const &listBirthday, Birthday const &birthday);
 
 /**
- * выводит на консоль список Дней рождения
+ * выводит на консоль список Дней рождения, так же присутсвует фильтр вывода
  */
-void outBirthday(std::list<Birthday> const &listBirthday);
+void outBirthday(std::list<Birthday> const &listBirthday, bool (*filter)(Birthday) = nullptr);
 
 /**
- * выводит на консоль список Событий
+ * выводит на консоль список Событий, так же присутсвует фильтр вывода
  */
-void outEvent(std::list<Event> const&listEvent);
+void outEvent(std::list<Event> const &listEvent, bool (*filter)(Event) = nullptr);
+
+/**
+ * выводит События которые наступают сегодня
+ */
+void outNowEvent(std::list<Event> const &listEvent, std::list<Birthday> const &listBirthday);
 
 
 #endif //_STRUCTURES_H_

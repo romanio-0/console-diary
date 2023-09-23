@@ -10,7 +10,7 @@ using namespace std;
 #define SORT_NAME '2'
 #define SORT_DATA_CREATE '3'
 
-void sortAndPrint(list<Event> listEvent, list<Birthday> listBirthday, char mode){
+void sortAndPrint(list<Event> listEvent, list<Birthday> listBirthday, char mode) {
     switch (mode) {
         case SORT_DATA_OCCURRENCE:
             listBirthday.sort([](Birthday const &a, Birthday const &b) {
@@ -40,6 +40,7 @@ void sortAndPrint(list<Event> listEvent, list<Birthday> listBirthday, char mode)
 
             outBirthday(listBirthday);
             outEvent(listEvent);
+
             break;
         case SORT_NAME:
             listBirthday.sort([](Birthday const &a, Birthday const &b) {
@@ -79,12 +80,11 @@ void sortAndPrint(list<Event> listEvent, list<Birthday> listBirthday, char mode)
 
             outEvent(listEvent);
             break;
-        default:
-            cout << "Enter valid value" << endl;
     }
 }
 
-int main() {
+
+int main(void) {
     list<Event> listEvent;
     list<Birthday> listBirthday;
 
@@ -151,12 +151,25 @@ int main() {
                 }
                 break;
             case '2':
-                cout << "How to sort the data?\n[1] - date of occurrence | [2] - Name | [3] - date create" << endl;
+                cout << "How to sort the data?\n[1] - date of occurrence | [2] - Name | [3] - date create | [4] - Today"
+                     << endl;
                 consRead.clear();
                 getline(cin, consRead);
 
-                // сортирует списки и выводит нужные данные
-                sortAndPrint(listEvent, listBirthday, consRead[0]);
+                switch (consRead[0]) {
+                    case '1':
+                    case '2':
+                    case '3':
+                        // сортирует списки и выводит нужные данные
+                        sortAndPrint(listEvent, listBirthday, consRead[0]);
+                        break;
+                    case '4':
+                        // выводит события которые происходят сегодня
+                        outNowEvent(listEvent, listBirthday);
+                        break;
+                    default:
+                        cout << "Enter valid value" << endl;
+                }
 
                 break;
             default:

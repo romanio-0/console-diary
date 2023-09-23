@@ -98,7 +98,7 @@ Event addEvent() {
     std::getline(std::cin, event.description);
 
     // дата записи
-    std::time_t t = std::time(nullptr);
+    std::time_t t = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
     std::tm *now = std::localtime(&t);
 
     event.created.day = now->tm_mday;
@@ -116,6 +116,16 @@ Birthday addBirthday() {
     std::cout << "Enter date of birth" << std::endl;
 
     birthday.date = readConsDate();
+
+    // вычесление возроста
+    std::time_t t = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    std::tm *now = std::localtime(&t);
+
+    birthday.age = now->tm_year + 1900 - birthday.date.year;
+    birthday.age -= now->tm_mon + 1 < birthday.date.month ? 1 :
+                    now->tm_mon + 1 == birthday.date.month &&
+                    now->tm_mday < birthday.date.day ? 1 : 0;
+
 
     std::cout << "Write Surname Name Patronymic: ";
 
@@ -144,27 +154,67 @@ bool checkRepeatBirthday(std::list<Birthday> const &listBirthday, Birthday const
     return false;
 }
 
-void outBirthday(std::list<Birthday> const &listBirthday) {
-    std::cout << "----------\nDate\t\tFIO" << std::endl;
+void outBirthday(std::list<Birthday> const &listBirthday, bool (*filter)(Birthday)) {
+    if (filter == nullptr){
+        filter = [](Birthday a){return true;};
+    }
+    std::cout << "----------\nDate\t\tAge\tFIO" << std::endl;
 
     for (Birthday const &it: listBirthday) {
-        std::cout << it.date.day << '.' << it.date.month << '.' << it.date.year << '\t'
-                  << it.full_name.surname << ' ' << it.full_name.name << ' ' << it.full_name.patronymic
-                  << std::endl;
+        if (filter(it)) {
+            std::cout << it.date.day << '.' << it.date.month << '.' << it.date.year << '\t' << it.age << '\t'
+                      << it.full_name.surname << " " << it.full_name.name << " " << it.full_name.patronymic
+                      << std::endl;
+        }
     }
 
-    std::cout << "----------" <<std::endl;
+    std::cout << "----------" << std::endl;
 }
 
-void outEvent(std::list<Event> const &listEvent) {
+void outEvent(const std::list<Event> &listEvent, bool (*filter)(Event)) {
+    if (filter == nullptr){
+        filter = [](Event a){return true;};
+    }
     std::cout << "----------\nExpires\t\tCreate\t\t Description" << std::endl;
 
     for (Event const &it: listEvent) {
-        std::cout << it.expires.day << '.' << it.expires.month << '.' << it.expires.year << '\t'
-                  << it.created.day << '.' << it.created.month << '.' << it.created.year << ' '
-                  << (int)it.created.hour << ':' << (int)it.created.minutes << "\t "
-                  << it.description << std::endl;
+        if (filter(it)) {
+            std::cout << it.expires.day << '.' << it.expires.month << '.' << it.expires.year << '\t'
+                      << it.created.day << '.' << it.created.month << '.' << it.created.year << " "
+                      << (int) it.created.hour << ':' << (int) it.created.minutes << "\t "
+                      << it.description << std::endl;
+        }
     }
-    std::cout << "----------" <<std::endl;
-    std::cout << std::endl;
+    std::cout << "----------" << std::endl;
 }
+
+void outNowEvent(std::list<Event> const &listEvent, std::list<Birthday> const &listBirthday) {
+    outBirthday(listBirthday, [](Birthday ev) {
+        std::time_t t = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+        std::tm *now = std::localtime(&t);
+
+        return now->tm_mon + 1 == ev.date.month &&
+               now->tm_mday == ev.date.day;
+    });
+
+    outEvent(listEvent, [](Event ev) {
+        std::time_t t = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+        std::tm *now = std::localtime(&t);
+
+        return now->tm_year + 1900 == ev.expires.year &&
+               now->tm_mon + 1 == ev.expires.month &&
+               now->tm_mday == ev.expires.day;
+    });
+}
+
+
+
+
+
+
+
+
+
+
+
+

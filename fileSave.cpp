@@ -20,14 +20,7 @@ bool writeEvent(Event const& event){
         return false;
     }
 
-    char tmp;
-
-    tmp = EVENT_FILE;
-    file.write(&tmp, 1);
-
-    file.write((char *) (&event.created), sizeof(event.created));
-    file.write((char *) (&event.expires), sizeof(event.expires));
-    file.write(event.description.c_str(), event.description.size() + 1);
+    writeEvent(event, file);
 
     file.close();
     return true;
@@ -39,6 +32,7 @@ void writeBirthday(Birthday const& birthday, std::ofstream &file){
     tmp = BIRTHDAY_FILE;
     file.write(&tmp, 1);
 
+    file.write((char *) (&birthday.age), sizeof(birthday.age));
     file.write((char *) (&birthday.date), sizeof(birthday.date));
     file.write(birthday.full_name.surname.c_str(), birthday.full_name.surname.size() + 1);
     file.write(birthday.full_name.name.c_str(), birthday.full_name.name.size() + 1);
@@ -51,15 +45,7 @@ bool writeBirthday(Birthday const& birthday){
         return false;
     }
 
-    char tmp;
-
-    tmp = BIRTHDAY_FILE;
-    file.write(&tmp, 1);
-
-    file.write((char *) (&birthday.date), sizeof(birthday.date));
-    file.write(birthday.full_name.surname.c_str(), birthday.full_name.surname.size() + 1);
-    file.write(birthday.full_name.name.c_str(), birthday.full_name.name.size() + 1);
-    file.write(birthday.full_name.patronymic.c_str(), birthday.full_name.patronymic.size() + 1);
+    writeBirthday(birthday, file);
 
     file.close();
     return true;
@@ -84,6 +70,52 @@ bool writeFileData(list<Event> const &listEvent, list<Birthday> const &listBirth
     return true;
 }
 
+
+void readEvent(Event & event, std::ifstream &file){
+    char tmp;
+
+    file.read((char *) (&event.created), sizeof(event.created));
+    file.read((char *) (&event.expires), sizeof(event.expires));
+    while(true){
+        file.get(tmp);
+        if (tmp == '\0')
+            break;
+
+        event.description.push_back(tmp);
+    }
+}
+
+void readBirthday(Birthday & birthday, std::ifstream &file){
+    char tmp;
+
+    file.read((char *) (&birthday.age), sizeof(birthday.age));
+    file.read((char *) (&birthday.date), sizeof(birthday.date));
+
+    while(true) {
+        file.get(tmp);
+        if (tmp == '\0')
+            break;
+
+        birthday.full_name.surname.push_back(tmp);
+    }
+
+    while(true) {
+        file.get(tmp);
+        if (tmp == '\0')
+            break;
+
+        birthday.full_name.name.push_back(tmp);
+    }
+
+    while(true) {
+        file.get(tmp);
+        if (tmp == '\0')
+            break;
+
+        birthday.full_name.patronymic.push_back(tmp);
+    }
+}
+
 void readFileData(list<Event> &listEvent, list<Birthday> &listBirthday) {
     ifstream file(NAME_FILE_DATA, ios::binary | ios::in);
     if (!file.is_open()) {
@@ -95,30 +127,13 @@ void readFileData(list<Event> &listEvent, list<Birthday> &listBirthday) {
     char tmp;
 
     while (file.get(tmp)) {
-
         if (tmp == EVENT_FILE) {
-            file.read((char *) (&tmpEvent.created), sizeof(tmpEvent.created));
-            file.read((char *) (&tmpEvent.expires), sizeof(tmpEvent.expires));
-            do {
-                file.get(tmp);
-                tmpEvent.description.push_back(tmp);
-            } while (tmp != '\0');
+            readEvent(tmpEvent, file);
 
             listEvent.push_back(tmpEvent);
+
         } else if (tmp == BIRTHDAY_FILE) {
-            file.read((char *) (&tmpBirthday.date), sizeof(tmpBirthday.date));
-            do {
-                file.get(tmp);
-                tmpBirthday.full_name.surname.push_back(tmp);
-            } while (tmp != '\0');
-            do {
-                file.get(tmp);
-                tmpBirthday.full_name.name.push_back(tmp);
-            } while (tmp != '\0');
-            do {
-                file.get(tmp);
-                tmpBirthday.full_name.patronymic.push_back(tmp);
-            } while (tmp != '\0');
+            readBirthday(tmpBirthday, file);
 
             listBirthday.push_back(tmpBirthday);
         }

@@ -12,7 +12,7 @@
 /**
  * функция для записи в файл структуры Event в существующий поток
  */
-void writeEvent(Event const& event, std::fstream &file);
+void writeEvent(Event const& event, std::ofstream &file);
 /**
  * функция для записи в файл структуры Event
  */
@@ -21,7 +21,7 @@ bool writeEvent(Event const& event);
 /**
  * функция для записи в файл структуры Birthday в существующий поток
  */
-void writeBirthday(Birthday const& birthday, std::fstream &file);
+void writeBirthday(Birthday const& birthday, std::ofstream &file);
 /**
  * функция для записи в файл структуры Birthday
  */
@@ -32,6 +32,16 @@ bool writeBirthday(Birthday const& birthday);
  * (файл перезаписывается)
  */
 bool writeFileData(std::list<Event> const &listEvent, std::list<Birthday> const &listBirthday);
+
+/**
+ * функция для чтения структуры Event из файла, из существующего потока
+ */
+void readEvent(Event & event, std::ifstream &file);
+
+/**
+ * функция для чтения структуры Birthday из файла, из существующего потока
+ */
+void readBirthday(Birthday & birthday, std::ifstream &file);
 
 /**
  * функция для считывания структур Event и Birthday из файла
