@@ -3,4 +3,6 @@ project(consoleDiary)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(consoleDiary main.cpp)
+set(FILE_CPP ./main.cpp ./sup.cpp)
+
+add_executable(consoleDiary ${FILE_CPP})
