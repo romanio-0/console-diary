@@ -39,11 +39,31 @@ struct Birthday {
     FIO full_name; // Структура с тремя строками: ФИО
 };
 
+/**
+ * функция запрацивающая у пользователя данные об Событии
+ * @return Возвращает заполненную структуру Event
+ */
 Event addEvent();
+
+/**
+ * функция запрацивающая у пользователя данные об Дне рождении
+ * @return Возвращает заполненную структуру Birthday
+ */
 Birthday addBirthday();
+
+/**
+ * функция проверяет существует уже такой день рождения или нет
+ */
 bool checkRepeatBirthday(std::list<Birthday> const &listBirthday, Birthday const &birthday);
 
+/**
+ * выводит на консоль список Дней рождения
+ */
 void outBirthday(std::list<Birthday> const &listBirthday);
+
+/**
+ * выводит на консоль список Событий
+ */
 void outEvent(std::list<Event> const&listEvent);
 
 

@@ -61,6 +61,12 @@ build CMakeFiles/consoleDiary.dir/sup.cpp.obj: CXX_COMPILER__consoleDiary_unscan
   OBJECT_DIR = CMakeFiles\consoleDiary.dir
   OBJECT_FILE_DIR = CMakeFiles\consoleDiary.dir
 
+build CMakeFiles/consoleDiary.dir/fileSave.cpp.obj: CXX_COMPILER__consoleDiary_unscanned_Debug D$:/ProjectIT/C++/consoleDiary/fileSave.cpp || cmake_object_order_depends_target_consoleDiary
+  DEP_FILE = CMakeFiles\consoleDiary.dir\fileSave.cpp.obj.d
+  FLAGS = -g -fdiagnostics-color=always
+  OBJECT_DIR = CMakeFiles\consoleDiary.dir
+  OBJECT_FILE_DIR = CMakeFiles\consoleDiary.dir
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target consoleDiary
@@ -69,7 +75,7 @@ build CMakeFiles/consoleDiary.dir/sup.cpp.obj: CXX_COMPILER__consoleDiary_unscan
 #############################################
 # Link the executable consoleDiary.exe
 
-build consoleDiary.exe: CXX_EXECUTABLE_LINKER__consoleDiary_Debug CMakeFiles/consoleDiary.dir/main.cpp.obj CMakeFiles/consoleDiary.dir/sup.cpp.obj
+build consoleDiary.exe: CXX_EXECUTABLE_LINKER__consoleDiary_Debug CMakeFiles/consoleDiary.dir/main.cpp.obj CMakeFiles/consoleDiary.dir/sup.cpp.obj CMakeFiles/consoleDiary.dir/fileSave.cpp.obj
   FLAGS = -g
   LINK_LIBRARIES = -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\consoleDiary.dir

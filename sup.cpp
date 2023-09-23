@@ -1,5 +1,6 @@
 #include "sup.h"
 
+// проверяет корректность даты
 bool validDay(int day, int month, int year) {
     if (month < 8) {
         if (month == 2) {
@@ -30,6 +31,7 @@ bool validDay(int day, int month, int year) {
     return false;
 }
 
+// считывает данные пользователя о дате
 Date readConsDate() {
     Date date;
     bool errBoll = true;
@@ -95,6 +97,7 @@ Event addEvent() {
     std::cout << "Write a description: ";
     std::getline(std::cin, event.description);
 
+    // дата записи
     std::time_t t = std::time(nullptr);
     std::tm *now = std::localtime(&t);
 
@@ -119,7 +122,7 @@ Birthday addBirthday() {
     std::cin >> birthday.full_name.surname;
     std::cin >> birthday.full_name.name;
     std::cin >> birthday.full_name.patronymic;
-    // на всякий отчищаем буффер
+    // на всякий отчищаем буффер на всякий случай
     std::cin.clear();
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
