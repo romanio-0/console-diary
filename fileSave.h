@@ -10,6 +10,11 @@
 #define BIRTHDAY_FILE -3
 
 /**
+ * записывает данные в текстовый файл
+ */
+bool saveInFile(std::list<Event> const &listEvent, std::list<Birthday> const &listBirthday, std::string path);
+
+/**
  * функция для записи в файл структуры Event в существующий поток
  */
 void writeEvent(Event const& event, std::ofstream &file);

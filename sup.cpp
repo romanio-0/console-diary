@@ -41,7 +41,7 @@ Date readConsDate() {
     while (errBoll) {
         try {
             while (true) {
-                std::cout << "Year - " << std::endl;
+                std::cout << "Year -" ;
                 std::getline(std::cin, consRead);
                 checkData = std::stoi(consRead);
                 consRead.clear();
@@ -54,7 +54,7 @@ Date readConsDate() {
             }
 
             while (true) {
-                std::cout << "Month - " << std::endl;
+                std::cout << "Month -";
                 std::getline(std::cin, consRead);
                 checkData = std::stoi(consRead);
                 consRead.clear();
@@ -67,7 +67,7 @@ Date readConsDate() {
             }
 
             while (true) {
-                std::cout << "Day - " << std::endl;
+                std::cout << "Day -";
                 std::getline(std::cin, consRead);
                 checkData = std::stoi(consRead);
                 consRead.clear();

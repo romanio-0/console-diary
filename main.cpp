@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <list>
+#include <vector>
 
 using namespace std;
 
@@ -74,15 +75,75 @@ void sortAndPrint(list<Event> listEvent, list<Birthday> listBirthday, char mode)
                     return false;
                 else if (a.created.hour < b.created.hour)
                     return true;
+                else if (a.created.hour > b.created.hour)
+                    return false;
                 else
                     return a.created.minutes < b.created.minutes;
             });
 
             outEvent(listEvent);
             break;
+        default:
+            break;
     }
 }
 
+void checkEvBr(list<Event> &listEvent, list<Birthday> &listBirthday) {
+    time_t timeT;
+    tm *pTm;
+    chrono::system_clock::time_point timePoint;
+    chrono::system_clock::duration durationTime;
+
+    while (true) {
+        //узнаем сколько осталось до окончания события
+        timeT = chrono::system_clock::to_time_t(chrono::system_clock::now());
+        pTm = localtime(&timeT);
+        pTm->tm_hour = 23;
+        pTm->tm_min = 59;
+        pTm->tm_sec = 59;
+
+        timePoint = chrono::system_clock::from_time_t(mktime(pTm));
+        durationTime = timePoint - chrono::system_clock::now();
+
+        //ждем конца
+        this_thread::sleep_for(chrono::microseconds(chrono::duration_cast<chrono::microseconds>(durationTime)));
+
+        auto itemEvent = listEvent.cbegin();
+        for (size_t i = 0; i < listEvent.size(); ++i, ++itemEvent) {
+            if (itemEvent->expires.year == pTm->tm_year + 1900 &&
+                itemEvent->expires.month == pTm->tm_mon + 1 &&
+                itemEvent->expires.day == pTm->tm_mday) {
+
+                listEvent.erase(itemEvent);
+            }
+        }
+
+        // если код выполнится быстрее чем за секунду и день не успеет сменится
+        this_thread::sleep_for(chrono::microseconds(1001));
+
+        //узнаем сколько осталось до дня рождения
+        timeT = chrono::system_clock::to_time_t(chrono::system_clock::now());
+        pTm = localtime(&timeT);
+        pTm->tm_hour = 00;
+        pTm->tm_min = 01;
+        pTm->tm_sec = 00;
+
+        timePoint = chrono::system_clock::from_time_t(mktime(pTm));
+        durationTime = timePoint - chrono::system_clock::now();
+
+        //ждем
+        this_thread::sleep_for(chrono::microseconds(chrono::duration_cast<chrono::microseconds>(durationTime)));
+
+        auto itemBirthday = listBirthday.begin();
+        for (size_t i = 0; i < listEvent.size(); ++i, ++itemBirthday) {
+            if (itemBirthday->date.month == pTm->tm_mon + 1 &&
+                itemBirthday->date.day == pTm->tm_mday) {
+
+                itemBirthday->age++;
+            }
+        }
+    }
+}
 
 int main(void) {
     list<Event> listEvent;
@@ -94,33 +155,16 @@ int main(void) {
     string consRead;
     Birthday tmpCheckBirthday;
 
+    // поток отслеживания события
+    thread threadEvent(checkEvBr, ref(listEvent), ref(listBirthday));
 
     // работает пока пользователь не введете "0"
     while (status) {
-        cout << "Commands:\n[1] - Add | [2] - Request | [0] - Exit" << endl;
+        cout << "Commands:\n[1] - Add | [2] - Request | [3] - Save | [0] - Exit" << endl;
         consRead.clear();
         getline(cin, consRead);
 
         switch (consRead[0]) {
-            case '0':
-                // пересохроняет все данные на случай ошибки или удаления данных
-                while (true) {
-                    if (!writeFileData(listEvent, listBirthday)) {
-                        cout << "Error save data in file\n[1] - Exit | [2] - Repeat" << endl;
-                        consRead.clear();
-                        getline(cin, consRead);
-
-                        if (consRead[0] == '1')
-                            break;
-                        else
-                            continue;
-                    }
-                    cout << "Save!" << endl;
-                    break;
-                }
-
-                status = false;
-                break;
             case '1':
                 cout << "Add:\n[1] - Event | [2] - Birthday" << endl;
                 consRead.clear();
@@ -172,11 +216,40 @@ int main(void) {
                 }
 
                 break;
+            case '3':
+                cout << "Write path:";
+                consRead.clear();
+                getline(cin, consRead);
+
+                if (!saveInFile(listEvent, listBirthday, consRead)) {
+                    cout << "Error open file" << endl;
+                    break;
+                }
+                cout << "Save in file" << endl;
+            case '0':
+                // пересохроняет все данные на случай ошибки или удаления данных
+                while (true) {
+                    if (!writeFileData(listEvent, listBirthday)) {
+                        cout << "Error save data in file\n[1] - Exit | [2] - Repeat" << endl;
+                        consRead.clear();
+                        getline(cin, consRead);
+
+                        if (consRead[0] == '1')
+                            break;
+                        else
+                            continue;
+                    }
+                    cout << "Save!" << endl;
+                    break;
+                }
+
+                status = false;
+                break;
             default:
                 cout << "Enter valid value" << endl;
         }
     }
 
-
+    threadEvent.detach();
     return 0;
 }

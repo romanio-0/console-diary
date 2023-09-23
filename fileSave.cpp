@@ -2,8 +2,37 @@
 
 using namespace std;
 
+bool saveInFile(std::list<Event> const &listEvent, std::list<Birthday> const &listBirthday, std::string path) {
+    ofstream file(path, ios::out);
+    if (!file.is_open()) {
+        return false;
+    }
 
-void writeEvent(Event const &event, std::ofstream &file){
+    file << "----------\nDate\t\tAge\tFIO\n";
+
+    for (Birthday const &it: listBirthday) {
+        file << it.date.day << '.' << it.date.month << '.' << it.date.year << '\t' << it.age << '\t'
+             << it.full_name.surname << " " << it.full_name.name << " " << it.full_name.patronymic << '\n';
+    }
+
+    file << "----------\n";
+    file << "----------\nExpires\t\tCreate\t\t Description\n";
+
+    for (Event const &it: listEvent) {
+        file << it.expires.day << '.' << it.expires.month << '.' << it.expires.year << '\t'
+             << it.created.day << '.' << it.created.month << '.' << it.created.year << " "
+             << (int) it.created.hour << ':' << (int) it.created.minutes << "\t "
+             << it.description << '\n';
+
+    }
+
+    file << "----------\n";
+
+    file.close();
+    return true;
+}
+
+void writeEvent(Event const &event, std::ofstream &file) {
     char tmp;
 
     tmp = EVENT_FILE;
@@ -14,7 +43,7 @@ void writeEvent(Event const &event, std::ofstream &file){
     file.write(event.description.c_str(), event.description.size() + 1);
 }
 
-bool writeEvent(Event const& event){
+bool writeEvent(Event const &event) {
     ofstream file(NAME_FILE_DATA, ios::binary | ios::out | ios::app);
     if (!file.is_open()) {
         return false;
@@ -26,7 +55,7 @@ bool writeEvent(Event const& event){
     return true;
 }
 
-void writeBirthday(Birthday const& birthday, std::ofstream &file){
+void writeBirthday(Birthday const &birthday, std::ofstream &file) {
     char tmp;
 
     tmp = BIRTHDAY_FILE;
@@ -39,7 +68,7 @@ void writeBirthday(Birthday const& birthday, std::ofstream &file){
     file.write(birthday.full_name.patronymic.c_str(), birthday.full_name.patronymic.size() + 1);
 }
 
-bool writeBirthday(Birthday const& birthday){
+bool writeBirthday(Birthday const &birthday) {
     ofstream file(NAME_FILE_DATA, ios::binary | ios::out | ios::app);
     if (!file.is_open()) {
         return false;
@@ -71,12 +100,12 @@ bool writeFileData(list<Event> const &listEvent, list<Birthday> const &listBirth
 }
 
 
-void readEvent(Event & event, std::ifstream &file){
+void readEvent(Event &event, std::ifstream &file) {
     char tmp;
 
     file.read((char *) (&event.created), sizeof(event.created));
     file.read((char *) (&event.expires), sizeof(event.expires));
-    while(true){
+    while (true) {
         file.get(tmp);
         if (tmp == '\0')
             break;
@@ -85,13 +114,13 @@ void readEvent(Event & event, std::ifstream &file){
     }
 }
 
-void readBirthday(Birthday & birthday, std::ifstream &file){
+void readBirthday(Birthday &birthday, std::ifstream &file) {
     char tmp;
 
     file.read((char *) (&birthday.age), sizeof(birthday.age));
     file.read((char *) (&birthday.date), sizeof(birthday.date));
 
-    while(true) {
+    while (true) {
         file.get(tmp);
         if (tmp == '\0')
             break;
@@ -99,7 +128,7 @@ void readBirthday(Birthday & birthday, std::ifstream &file){
         birthday.full_name.surname.push_back(tmp);
     }
 
-    while(true) {
+    while (true) {
         file.get(tmp);
         if (tmp == '\0')
             break;
@@ -107,7 +136,7 @@ void readBirthday(Birthday & birthday, std::ifstream &file){
         birthday.full_name.name.push_back(tmp);
     }
 
-    while(true) {
+    while (true) {
         file.get(tmp);
         if (tmp == '\0')
             break;
