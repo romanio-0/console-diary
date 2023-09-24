@@ -145,10 +145,13 @@ void readBirthday(Birthday &birthday, std::ifstream &file) {
     }
 }
 
-void readFileData(list<Event> &listEvent, list<Birthday> &listBirthday) {
+GetListEvBr readFileData() {
+
+    GetListEvBr listEvBr = {};
+
     ifstream file(NAME_FILE_DATA, ios::binary | ios::in);
     if (!file.is_open()) {
-        return;
+        return listEvBr;
     }
 
     Event *tmpEvent = new Event;
@@ -160,14 +163,14 @@ void readFileData(list<Event> &listEvent, list<Birthday> &listBirthday) {
             memset((void*)tmpEvent, 0, sizeof(Event));
 
             readEvent(*tmpEvent, file);
-            listEvent.push_back(*tmpEvent);
+            listEvBr.listEvent.push_back(*tmpEvent);
 
 
         } else if (tmp == BIRTHDAY_FILE) {
             memset((void*)tmpBirthday, 0, sizeof(Birthday));
 
             readBirthday(*tmpBirthday, file);
-            listBirthday.push_back(*tmpBirthday);
+            listEvBr.listBirthday.push_back(*tmpBirthday);
         }
     }
 
@@ -175,4 +178,6 @@ void readFileData(list<Event> &listEvent, list<Birthday> &listBirthday) {
     delete tmpBirthday;
 
     file.close();
+
+    return listEvBr;
 }

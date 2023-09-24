@@ -11,6 +11,8 @@ using namespace std;
 #define SORT_NAME '2'
 #define SORT_DATA_CREATE '3'
 
+mutex mutexGlobal;
+
 void sortAndPrint(list<Event> listEvent, list<Birthday> listBirthday, char mode) {
     switch (mode) {
         case SORT_DATA_OCCURRENCE:
@@ -88,9 +90,13 @@ void sortAndPrint(list<Event> listEvent, list<Birthday> listBirthday, char mode)
     }
 }
 
-void clearData(list<Event> &listEvent, list<Birthday> &listBirthday){
+void clearData(list<Event> &listEvent, list<Birthday> &listBirthday) {
+    mutexGlobal.lock();
+
     listEvent.clear();
     listBirthday.clear();
+
+    mutexGlobal.unlock();
 
     remove(NAME_FILE_DATA);
 }
@@ -110,10 +116,11 @@ void checkEvBr(list<Event> &listEvent, list<Birthday> &listBirthday) {
         pTm->tm_sec = 59;
 
         timePoint = chrono::system_clock::from_time_t(mktime(pTm));
-        durationTime = timePoint - chrono::system_clock::now();
 
-        //ждем конца
-        this_thread::sleep_for(chrono::microseconds(chrono::duration_cast<chrono::microseconds>(durationTime)));
+        //ждем
+        this_thread::sleep_until(timePoint);
+
+        mutexGlobal.lock();
 
         auto itemEvent = listEvent.cbegin();
         for (size_t i = 0; i < listEvent.size(); ++i, ++itemEvent) {
@@ -124,6 +131,8 @@ void checkEvBr(list<Event> &listEvent, list<Birthday> &listBirthday) {
                 listEvent.erase(itemEvent);
             }
         }
+
+        mutexGlobal.unlock();
 
         // если код выполнится быстрее чем за секунду и день не успеет сменится
         this_thread::sleep_for(chrono::microseconds(1001));
@@ -136,19 +145,22 @@ void checkEvBr(list<Event> &listEvent, list<Birthday> &listBirthday) {
         pTm->tm_sec = 00;
 
         timePoint = chrono::system_clock::from_time_t(mktime(pTm));
-        durationTime = timePoint - chrono::system_clock::now();
 
         //ждем
-        this_thread::sleep_for(chrono::microseconds(chrono::duration_cast<chrono::microseconds>(durationTime)));
+        this_thread::sleep_until(timePoint);
+
+        mutexGlobal.lock();
 
         auto itemBirthday = listBirthday.begin();
-        for (size_t i = 0; i < listEvent.size(); ++i, ++itemBirthday) {
+        for (size_t i = 0; i < listBirthday.size(); ++i, ++itemBirthday) {
             if (itemBirthday->date.month == pTm->tm_mon + 1 &&
                 itemBirthday->date.day == pTm->tm_mday) {
 
                 itemBirthday->age++;
             }
         }
+
+        mutexGlobal.unlock();
 
         //записываем изменения
         writeFileData(listEvent, listBirthday);
@@ -158,8 +170,12 @@ void checkEvBr(list<Event> &listEvent, list<Birthday> &listBirthday) {
 int main(void) {
     list<Event> listEvent;
     list<Birthday> listBirthday;
+    GetListEvBr listEvBr;
 
-    readFileData(listEvent, listBirthday);
+    listEvBr = readFileData();
+
+    listEvent = listEvBr.listEvent;
+    listBirthday = listEvBr.listBirthday;
 
     bool status = true;
     string consRead;
@@ -182,7 +198,9 @@ int main(void) {
 
                 switch (consRead[0]) {
                     case '1':
+                        mutexGlobal.lock();
                         listEvent.push_back(addEvent());
+                        mutexGlobal.unlock();
 
                         // save
                         writeEvent(listEvent.back());
@@ -195,7 +213,9 @@ int main(void) {
                             }
                             cout << "This person is already on the list" << endl;
                         }
+                        mutexGlobal.lock();
                         listBirthday.push_back(tmpCheckBirthday);
+                        mutexGlobal.unlock();
 
                         //save
                         writeBirthday(tmpCheckBirthday);
@@ -260,7 +280,7 @@ int main(void) {
                 consRead.clear();
                 getline(cin, consRead);
 
-                if (consRead[0] == '1'){
+                if (consRead[0] == '1') {
                     clearData(listEvent, listBirthday);
                 }
 

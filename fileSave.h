@@ -10,6 +10,11 @@
 #define EVENT_FILE -2
 #define BIRTHDAY_FILE -3
 
+struct GetListEvBr{
+    std::list<Event> listEvent;
+    std::list<Birthday> listBirthday;
+};
+
 /**
  * записывает данные в текстовый файл
  */
@@ -52,6 +57,6 @@ void readBirthday(Birthday & birthday, std::ifstream &file);
 /**
  * функция для считывания структур Event и Birthday из файла
  */
-void readFileData(std::list<Event> &listEvent, std::list<Birthday> &listBirthday);
+GetListEvBr readFileData();
 
 #endif //_FILESAVE_H_
