@@ -105,7 +105,6 @@ void checkEvBr(list<Event> &listEvent, list<Birthday> &listBirthday) {
     time_t timeT;
     tm *pTm;
     chrono::system_clock::time_point timePoint;
-    chrono::system_clock::duration durationTime;
 
     while (true) {
         //узнаем сколько осталось до окончания события
@@ -259,6 +258,9 @@ int main(void) {
             case '0':
                 // пересохроняет все данные на случай ошибки или удаления данных
                 while (true) {
+                    // чтобы при сохранении не было ошибки и не началась гонка данных
+                    lock_guard<mutex> lock(mutexGlobal);
+
                     if (!writeFileData(listEvent, listBirthday)) {
                         cout << "Error save data in file\n[1] - Exit | [2] - Repeat" << endl;
                         consRead.clear();
@@ -269,6 +271,8 @@ int main(void) {
                         else
                             continue;
                     }
+
+
                     cout << "Save!" << endl;
                     break;
                 }

@@ -10,6 +10,7 @@
 #define EVENT_FILE -2
 #define BIRTHDAY_FILE -3
 
+//для более безопасной передачи списков (можно было бы и не использовать)
 struct GetListEvBr{
     std::list<Event> listEvent;
     std::list<Birthday> listBirthday;
