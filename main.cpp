@@ -61,17 +61,17 @@ void sortAndPrint(list<Event> listEvent, list<Birthday> listBirthday, char mode)
             break;
         case SORT_DATA_CREATE:
             listEvent.sort([](Event const &a, Event const &b) {
-                if (a.created.year < b.created.year)
+                if (a.created.date.year < b.created.date.year)
                     return true;
-                else if (a.created.year > b.created.year)
+                else if (a.created.date.year > b.created.date.year)
                     return false;
-                else if (a.created.month < b.created.month)
+                else if (a.created.date.month < b.created.date.month)
                     return true;
-                else if (a.created.month > b.created.month)
+                else if (a.created.date.month > b.created.date.month)
                     return false;
-                else if (a.created.day < b.created.day)
+                else if (a.created.date.day < b.created.date.day)
                     return true;
-                else if (a.created.day > b.created.day)
+                else if (a.created.date.day > b.created.date.day)
                     return false;
                 else if (a.created.hour < b.created.hour)
                     return true;

@@ -94,16 +94,16 @@ Event addEvent() {
 
     event.expires = readConsDate();
 
-    std::cout << "Write a description: ";
+    std::cout << "Write a description:";
     std::getline(std::cin, event.description);
 
     // дата записи
     std::time_t t = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
     std::tm *now = std::localtime(&t);
 
-    event.created.day = now->tm_mday;
-    event.created.month = now->tm_mon + 1;
-    event.created.year = now->tm_year + 1900;
+    event.created.date.day = now->tm_mday;
+    event.created.date.month = now->tm_mon + 1;
+    event.created.date.year = now->tm_year + 1900;
     event.created.hour = now->tm_hour;
     event.created.minutes = now->tm_min;
 
@@ -127,7 +127,7 @@ Birthday addBirthday() {
                     now->tm_mday < birthday.date.day ? 1 : 0;
 
 
-    std::cout << "Write Surname Name Patronymic: ";
+    std::cout << "Write Surname Name Patronymic:";
 
     std::cin >> birthday.full_name.surname;
     std::cin >> birthday.full_name.name;
@@ -180,7 +180,7 @@ void outEvent(const std::list<Event> &listEvent, bool (*filter)(Event)) {
     for (Event const &it: listEvent) {
         if (filter(it)) {
             std::cout << it.expires.day << '.' << it.expires.month << '.' << it.expires.year << '\t'
-                      << it.created.day << '.' << it.created.month << '.' << it.created.year << " "
+                      << it.created.date.day << '.' << it.created.date.month << '.' << it.created.date.year << " "
                       << (int) it.created.hour << ':' << (int) it.created.minutes << "\t "
                       << it.description << std::endl;
         }

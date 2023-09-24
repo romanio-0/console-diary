@@ -23,9 +23,7 @@ struct Date {
 };
 
 struct DateTime {
-    uint16_t day;
-    uint16_t month;
-    uint16_t year;
+    Date date;
     uint8_t hour;
     uint8_t minutes;
 };

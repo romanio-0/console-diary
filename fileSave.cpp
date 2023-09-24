@@ -20,7 +20,7 @@ bool saveInFile(std::list<Event> const &listEvent, std::list<Birthday> const &li
 
     for (Event const &it: listEvent) {
         file << it.expires.day << '.' << it.expires.month << '.' << it.expires.year << '\t'
-             << it.created.day << '.' << it.created.month << '.' << it.created.year << " "
+             << it.created.date.day << '.' << it.created.date.month << '.' << it.created.date.year << " "
              << (int) it.created.hour << ':' << (int) it.created.minutes << "\t "
              << it.description << '\n';
 
@@ -91,7 +91,7 @@ bool writeFileData(list<Event> const &listEvent, list<Birthday> const &listBirth
     }
 
 
-    for (Birthday it: listBirthday) {
+    for (Birthday const &it: listBirthday) {
         writeBirthday(it, file);
     }
 
@@ -151,22 +151,28 @@ void readFileData(list<Event> &listEvent, list<Birthday> &listBirthday) {
         return;
     }
 
-    Event tmpEvent;
-    Birthday tmpBirthday;
+    Event *tmpEvent = new Event;
+    Birthday *tmpBirthday = new Birthday;
     char tmp;
 
     while (file.get(tmp)) {
         if (tmp == EVENT_FILE) {
-            readEvent(tmpEvent, file);
+            memset((void*)tmpEvent, 0, sizeof(Event));
 
-            listEvent.push_back(tmpEvent);
+            readEvent(*tmpEvent, file);
+            listEvent.push_back(*tmpEvent);
+
 
         } else if (tmp == BIRTHDAY_FILE) {
-            readBirthday(tmpBirthday, file);
+            memset((void*)tmpBirthday, 0, sizeof(Birthday));
 
-            listBirthday.push_back(tmpBirthday);
+            readBirthday(*tmpBirthday, file);
+            listBirthday.push_back(*tmpBirthday);
         }
     }
+
+    delete tmpEvent;
+    delete tmpBirthday;
 
     file.close();
 }

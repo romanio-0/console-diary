@@ -3,6 +3,7 @@
 
 #include "sup.h"
 #include <fstream>
+#include <string.h>
 
 #define NAME_FILE_DATA "data.bin"
 
